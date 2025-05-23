@@ -10,6 +10,7 @@
   --side-margin: 15%;
   --row-hover: #f8f9fa;
   --list-width: 800px;
+  --id-width: 100px;
   --call-id-width: 200px;
   --date-width: 160px;
   --header-height: 43px;
@@ -169,7 +170,7 @@ body {
 
 .table-header {
   display: grid;
-  grid-template-columns: var(--call-id-width) 1fr var(--date-width);
+  grid-template-columns: var(--id-width) var(--call-id-width) 1fr;
   padding: 0.9rem 1rem;
   background-color: var(--light-peach);
   border-bottom: 1px solid var(--silver);
@@ -211,7 +212,7 @@ body {
 
 .transcript-card {
   display: grid;
-  grid-template-columns: var(--call-id-width) 1fr var(--date-width);
+  grid-template-columns: var(--id-width) var(--call-id-width) 1fr;
   background-color: white;
   transition: background-color 0.2s ease;
   cursor: pointer;
@@ -226,6 +227,14 @@ body {
 .transcript-card.selected {
   background-color: var(--row-hover);
   border-right: 3px solid var(--primary-teal);
+}
+
+.id-cell {
+  font-weight: 500;
+  color: var(--dark-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .call-id-cell {

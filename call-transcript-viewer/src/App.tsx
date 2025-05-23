@@ -4,8 +4,10 @@ import './App.css'
 interface Transcript {
   id: string;
   call_id: string;
-  transcript: string;
-  datetime?: string;
+  transcript: {
+    speaker: string;
+    text: string;
+  }[];
   _rid?: string;
   _self?: string;
   _etag?: string;
@@ -63,41 +65,40 @@ function App() {
 
   const filteredTranscripts = transcripts.filter(transcript =>
     transcript.call_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    transcript.transcript.toLowerCase().includes(searchQuery.toLowerCase())
+    transcript.transcript.some(entry => entry.text.toLowerCase().includes(searchQuery.toLowerCase()))
   )
 
   const selectedTranscript = selectedCallId 
     ? transcripts.find(t => t.call_id === selectedCallId)
     : null
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    })
+  const getPreviewText = (transcript: {speaker: string, text: string}[]) => {
+    if (!transcript || transcript.length === 0) return '';
+    const firstEntry = transcript[0];
+    const previewText = `${firstEntry.speaker}: ${firstEntry.text}`;
+    return previewText.length > 100 ? previewText.substring(0, 100) + '...' : previewText;
   }
 
-  const getPreviewText = (text: string) => {
-    return text.length > 100 ? text.substring(0, 100) + '...' : text
+  const formatTranscriptDisplay = (transcript: {speaker: string, text: string}[]) => {
+    return transcript.map((entry, index) => (
+      `${entry.speaker}: ${entry.text}`
+    )).join('\n');
   }
 
-  const formatJson = (transcript: any) => {
-    const jsonObj = {
+  const formatJson = (transcript: Transcript) => {
+    return JSON.stringify({
       id: transcript.id,
       call_id: transcript.call_id,
-      transcript: transcript.transcript,
+      transcript: transcript.transcript.map(t => ({
+        speaker: t.speaker,
+        text: t.text
+      })),
       _rid: transcript._rid,
       _self: transcript._self,
       _etag: transcript._etag,
       _attachments: transcript._attachments,
       _ts: transcript._ts
-    }
-    return JSON.stringify(jsonObj, null, 4)
+    }, null, 4);
   }
 
   const handleHomeNavigation = () => {
@@ -184,7 +185,7 @@ function App() {
             <div className="table-header">
               <div className="table-header-cell">ID</div>
               <div className="table-header-cell">Call ID</div>
-              <div className="table-header-cell">Transcript</div>
+              <div className="table-header-cell">Preview</div>
             </div>
             <div className="transcripts-scroll">
               {loading ? (
@@ -202,7 +203,7 @@ function App() {
                       selectedCallId === transcript.call_id ? null : transcript.call_id
                     )}
                   >
-                    <div className="date-cell">{transcript.id}</div>
+                    <div className="id-cell">{transcript.id}</div>
                     <div className="call-id-cell">{transcript.call_id}</div>
                     <div className="preview-cell">{getPreviewText(transcript.transcript)}</div>
                   </div>
