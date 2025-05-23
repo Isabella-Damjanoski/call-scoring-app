@@ -79,26 +79,12 @@ function App() {
     return previewText.length > 100 ? previewText.substring(0, 100) + '...' : previewText;
   }
 
-  const formatTranscriptDisplay = (transcript: {speaker: string, text: string}[]) => {
-    return transcript.map((entry, index) => (
-      `${entry.speaker}: ${entry.text}`
-    )).join('\n');
-  }
-
   const formatJson = (transcript: Transcript) => {
     return JSON.stringify({
       id: transcript.id,
       call_id: transcript.call_id,
-      transcript: transcript.transcript.map(t => ({
-        speaker: t.speaker,
-        text: t.text
-      })),
-      _rid: transcript._rid,
-      _self: transcript._self,
-      _etag: transcript._etag,
-      _attachments: transcript._attachments,
-      _ts: transcript._ts
-    }, null, 4);
+      transcript: transcript.transcript
+    }, null, 2);
   }
 
   const handleHomeNavigation = () => {
